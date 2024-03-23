@@ -57,59 +57,68 @@
     </div>
 
 <div class="container mt-4">
-    <form class="form-inline" action="{{ route('search') }}" method="GET" >
+
+    <form class="form-inline" action="{{ route('hyoji_search') }}" method="POST" >
+        @csrf
 
         <div class="container">
             <div class="search-bar">
 
                     <!-- 会社名 -->
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="companyCheck" checked>
+                    <input class="form-check-input" type="checkbox" id="companyCheck">
                     <label class="form-check-label" for="companyCheck">会社名</label>
-                    <input type="text" class="form-control" placeholder="会社名" id="companyNameInput" name="companyNameInput">
+
+                    <input type="text" class="form-control" placeholder="" id="companyNameInput"
+                     name="companyNameInput" value="{{ !empty($companyName)? $companyName: '' }}">
+
                     <button type="button" class="btn btn-primary" id="AjaxCompany">検索</button>
-                    <input type="text" class="form-control" placeholder="" id="companyNameOutput" name="companyNameOutput">
+
+                    <input type="text" class="form-control" placeholder="" id="companyNameOutput"
+                    name="companyNameOutput" value="{{ !empty($companyNameOut)? $companyNameOut: '' }}">
                 </div>
 
                 <!-- 対象組織 -->
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="soshikiCheck" checked>
+                    <input class="form-check-input" type="checkbox" id="soshikiCheck">
                     <label class="form-check-label" for="soshikiCheck">対象組織</label>
-                    <input type="text" class="form-control" placeholder="組織名" id="soshikiNameInput" name="soshikiNameInput">
+
+                    <input type="text" class="form-control" placeholder="" id="soshikiNameInput"
+                    name="soshikiNameInput" value="{{ !empty($soshikiName)? $soshikiName: ''}}">
+
                     <button type="button" class="btn btn-primary" id="AjaxSoshiki">検索</button>
-                    <input type="text" class="form-control" placeholder="" id="soshikiNameOutput" name="soshikiNameOutput">
+
+                    <input type="text" class="form-control" placeholder="" id="soshikiNameOutput"
+                    name="soshikiNameOutput" value="{{ !empty($soshikiNameOut)? $soshikiNameOut: '' }}">
                 </div>
 
-             <!-- 権限区分 -->
              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="authorityCheck" checked>
+                <input class="form-check-input" type="checkbox" id="authorityCheck">
                 <label class="form-check-label" for="authorityCheck">権限区分</label>
 
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="authorityOptions" id="allCompany" value="all" checked>
+                    <input class="form-check-input" type="radio" name="kengenKubun"
+                    id="allCompany" value="1" disabled>
                     <label class="form-check-label" for="allCompany">全社</label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="authorityOptions" id="myCompany" value="my">
+                    <input class="form-check-input" type="radio" name="kengenKubun"
+                    id="myCompany" value="2" disabled>
                     <label class="form-check-label" for="myCompany">自社</label>
                 </div>
             </div>
 
         </div>
     </div>
-</form>
 </div>
-<!----------------------------------------------------------------------------------------------->
-<div class="button-group d-flex justify-content-center mt-4">
     <!--表示ボタン-->
-    <form class="form-inline "action="{{ route('hyoji_search') }}" method="POST">
-        @csrf
+    <div class="button-group d-flex justify-content-center mt-4">
       <button type="submit" class="btn btn-primary">表示する</button>
     </form>
-
     <!--追加ボタン-->
-    <a href="{{ route('stress_system.doctor_detail') }}" class="btn btn-primary">追加する</a>
-</div>
+    <a href="{{ route('stress_system.doctor_detail') }}"
+    class="btn btn-primary">追加する</a>
+    </div>
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
@@ -118,7 +127,8 @@
                     <th>名前</th>
                     <th>会社名</th>
                     <th>組織名</th>
-                    <th>備考</th>
+                    <th>権限区分</th>
+                    <th></th>
                 </tr>
             </thead>
 
@@ -132,6 +142,7 @@
                     <td>{{ $user->name }}</td> <!-- 名前 -->
                     <td>{{ $user->KAISYA_CODE }}</td> <!-- 会社名 -->
                     <td>{{ $user->SOSHIKI_CODE }}</td> <!-- 組織名 -->
+                    <td>{{ $user->KENGEN_KUBUN }}</td> <!--権限区分-->
 
                     <td>
                         <a href="{{ route('detail',
@@ -144,10 +155,13 @@
                 </tr>
 
                 @empty
-                    <p>No List</p>
+                    <p>会社名または組織名の結果がありません。</p>
                 @endforelse
             </tbody>
         </table>
+        {{-- <div class="d-flex justify-content-center">
+            {{ $results->links() }}
+        </div> --}}
 
     <!-- Bootstrap JS and dependencies -->
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.9.6/dist/umd/popper.min.js"></script>
@@ -156,7 +170,7 @@
 <!----------------------------------------------------------------------------------------------->
 
     <!--ajaxCompany-->
-    <script>
+<script>
 
         $( '#AjaxCompany' ).on( 'click' , function () {
             //alert('ddd');
@@ -179,10 +193,10 @@
             });
         } );
 
-    </script>
+
 
     <!--ajaxSoshiki-->
-    <script>
+
         $( '#AjaxSoshiki' ).on( 'click', function() {
             var soshikiName = $('#soshikiNameInput').val();
 
@@ -202,7 +216,44 @@
                 alert ( '通信が失敗しました。' );
             });
         });
-    </script>
-</body>
 
-<!----------------------------------------------------------------------------------------------->
+
+    // 権限区分버튼 안눌렀을때, 디폴트값 비활성화
+    const checkbox = document.getElementById('authorityCheck');
+    const radio1 = document.getElementById('allCompany');
+    const radio2 = document.getElementById('myCompany');
+
+    checkbox.addEventListener('change', function() {
+        if (authorityCheck.checked) {
+            allCompany.disabled = false;
+            myCompany.disabled = false;
+        } else {
+            allCompany.disabled = true;
+            myCompany.disabled = true;
+        }
+    });
+
+
+    $(document).ready(function() {
+    // 회사명 체크박스 상태의 변경 이벤트 리스너
+    $('#companyCheck').change(function() {
+        var checked = $(this).is(':checked');
+        $('#companyNameInput').prop('disabled', !checked);
+        $('#companyNameOutput').prop('disabled', !checked);
+    });
+
+    // 조직명 체크박스 상태의 변경 이벤트 리스너
+    $('#soshikiCheck').change(function() {
+        var checked = $(this).is(':checked');
+        $('#soshikiNameInput').prop('disabled', !checked);
+        $('#soshikiNameOutput').prop('disabled', !checked);
+    });
+
+    // 페이지 로드할때, 체크박스 상태에 의한 입력창 초기설정
+    $('#companyCheck').trigger('change');
+    $('#soshikiCheck').trigger('change');
+    });
+
+</script>
+
+</body>

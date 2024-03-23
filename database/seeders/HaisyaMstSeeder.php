@@ -15,7 +15,7 @@ class HaisyaMstSeeder extends Seeder
         for ($i = 1; $i <= 10; $i++) {
             Haisya_mst::create([
                 'KAISYA_CODE' => 'COMP' . sprintf('%02d', $i),
-                'KAISYA_NAME_JPN' => '회사명' . $i,
+                'KAISYA_NAME_JPN' => '会社名' . $i,
                 'KAISYA_NAME_ENG' => 'Company' . $i,
             ]);
         }

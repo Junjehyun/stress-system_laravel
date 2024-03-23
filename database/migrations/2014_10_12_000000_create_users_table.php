@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('USER_ID', 14);
             $table->char('KAISYA_CODE', 6);
             $table->string('SOSHIKI_CODE', 69);
+            $table->tinyInteger('KENGEN_KUBUN')->nullable();
             //
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();

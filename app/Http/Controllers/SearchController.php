@@ -10,16 +10,6 @@ use Illuminate\Http\Request;
 
 class SearchController extends Controller
 {
-
-    // public function defaultList() {
-    // // users 테이블에서 필요한 컬럼만 선택하여 모든 레코드 조회
-    // $results = User::select('id as No', 'USER_ID', 'name', 'KAISYA_CODE',
-    // 'SOSHIKI_CODE')->get();
-
-    // // 뷰로 데이터 전달
-    // return view('stress_system.doctor_list', compact('results'));
-    // }
-
     public function search(Request $request){
 
         $CompanyName = request()->input('companyNameInput');
@@ -42,7 +32,7 @@ class SearchController extends Controller
 
     $result = [];
 
-    // リクエストから検索条件を受け取る
+    // 리퀘스트부터 검색 조건을 받아온다.
     $userID = $request->input("USER_ID");
     $name = $request->input("name");
     $companyCode = $request->input("KAISYA_CODE");
@@ -58,29 +48,45 @@ class SearchController extends Controller
     'taisyo_soshikis.SOSHIKI_NAME_JPN');
 
    // 회사명 검색 조건을 받아옴
-
    $companyName = $request->input('companyNameInput');
-   // 회사명 검색 조건이 있는 경우 쿼리에 조건 추가
+   // 회사명 검색 조건이 있는 경우 쿼리에 조건 추가 일명 아이마이 켄사쿠
    if ($companyName) {
        $query->where('haisya_msts.KAISYA_NAME_JPN', 'like', "%{$companyName}%");
    }
 
    // 조직명 검색 조건을 받아옴
    $soshikiName = $request->input('soshikiNameInput');
-   // 조직명 검색 조건이 있는 경우 쿼리에 조건 추가
+   // 조직명 검색 조건이 있는 경우 쿼리에 조건 추가 일명 아이마이 켄사쿠
    if ($soshikiName) {
        $query->where('taisyo_soshikis.SOSHIKI_NAME_JPN', 'like', "%{$soshikiName}%");
 
     }
 
+    //権限区分で検索
+    $kengenKubun = $request->input('kengenKubun');
+    if($kengenKubun) {
+        $query->where('users.KENGEN_KUBUN', $kengenKubun);
+    }
+
      // 결과를 가져옴
      $results = $query->get();
 
+        // KENGAN_KUBUN 文字に表示するロジック
+    $results->transform(function ($item, $key) {
+        $item->KENGEN_KUBUN = $item->KENGEN_KUBUN == 1 ? '全社' : '自社';
+        return $item;
+    });
+
+    // 検索しても検索語残す
+    $companyName = $request->input('companyNameInput');
+    $soshikiName = $request->input('soshikiNameInput');
+
+    $companyNameOut = $request->input('companyNameOutput');
+    $soshikiNameOut = $request->input('soshikiNameOutput');
+
+
      // 뷰로 결과 반환
-     return view('stress_system.doctor_list', compact('results'));
-
-
+     return view('stress_system.doctor_list',
+     compact('results'));
    }
-       // 아무런 조건도 없으면 모든 레코드를 반환 (전체 목록 표시)
-
 }

@@ -13,7 +13,10 @@ class DoctorListController extends Controller
         $results = [];
 
         $results = User::select('id as No', 'USER_ID', 'name', 'KAISYA_CODE',
-        'SOSHIKI_CODE')->get();
+        'SOSHIKI_CODE', 'KENGEN_KUBUN')->get();
+
+        // pagination
+        $results = User::latest()->paginate(10);
 
         return view("stress_system.doctor_list", compact('results'));
     }

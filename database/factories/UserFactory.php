@@ -26,6 +26,7 @@ class UserFactory extends Factory
             'name' => $this->faker->name,
             'KAISYA_CODE' => $this->faker->numerify('ABC###'),
             'SOSHIKI_CODE' => $this->faker->numerify('ORG###'),
+            'KENGEN_KUBUN' => $this->faker->randomElement([1,2]),
             'email' => $this->faker->unique()->safeEmail,
             'password' => bcrypt('password'),
             //'name' => $this->faker->name(),

@@ -15,12 +15,13 @@ class UserSeeder extends Seeder
     {
         //
         //User::factory()->count(10)->create();
-        for ($i = 1; $i <= 10; $i++) {
+        for ($i = 1; $i <= 30; $i++) {
             User::create([
                 'USER_ID' => 'USER' . sprintf('%03d', $i),
-                'name' => '사용자' . $i,
-                'KAISYA_CODE' => 'COMP' . sprintf('%02d', $i),
-                'SOSHIKI_CODE' => 'ORG' . sprintf('%02d', $i),
+                'name' => 'ユーザー' . $i,
+                'KAISYA_CODE' => 'COMP' . sprintf('%02d', ceil($i / 5)),
+                'SOSHIKI_CODE' => 'ORG' . sprintf('%02d', ceil($i / 5)),
+                'KENGEN_KUBUN' => rand(1, 2),
                 'email' => 'user' . $i . '@example.com',
                 'password' => bcrypt('password'),
             ]);

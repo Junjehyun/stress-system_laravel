@@ -18,8 +18,8 @@ class TaisyoSoshikiSeeder extends Seeder
             Taisyo_soshiki::create([
                 'SOSHIKI_CODE' => 'ORG' . sprintf('%02d', $i),
                 'KAISYA_CODE' => 'COMP' . sprintf('%02d', $i),
-                'KAISYA_NAME_JPN' => '회사명' . $i,
-                'SOSHIKI_NAME_JPN' => '조직명' . $i,
+                'KAISYA_NAME_JPN' => '会社名' . $i,
+                'SOSHIKI_NAME_JPN' => '組織名' . $i,
             ]);
         }
     }
