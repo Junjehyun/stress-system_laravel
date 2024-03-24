@@ -59,7 +59,8 @@
             <div class="col-md-6">
                 <label for="USER_ID" class="form-label">社員ＩＤ</label>
                 <div class="input-group">
-                    <input type="text" id="USER_ID" value="{{ $user->USER_ID ?? '' }}" name="USER_ID" class="form-control" maxlength="14" required>
+                    <input type="text" id="USER_ID" value="{{ $user->USER_ID ?? '' }}"
+                    name="USER_ID" class="form-control" required {{ isset($user) ? 'disabled' : '' }}>
 
                     <div class="btn btn-primary" id="searchBtn" onclick="search()">検索</div>
                 </div>
@@ -73,12 +74,12 @@
 
       <div class="row mb-3">
         <div class="col-md-6">
-            <label for="KAISYA_NAME" class="form-label">会社名</label>
+            <label for="KAISYA_CODE" class="form-label">会社名</label>
             <input type="text" id="KAISYA_CODE" name="KAISYA_CODE"
             value="{{ $user->KAISYA_CODE ?? '' }}" class="form-control">
         </div>
         <div class="col-md-6">
-            <label for="SOSHIKI_NAME" class="form-label">組織名</label>
+            <label for="SOSHIKI_CODE" class="form-label">組織名</label>
             <input type="text" id="SOSHIKI_CODE" name="SOSHIKI_CODE"
             value="{{ $user->SOSHIKI_CODE ?? '' }}" class="form-control">
         </div>

@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateUserRequest;
+use App\Http\Requests\CreateUserRequest;
 use Illuminate\Http\Request;
 use App\Models\User;
 
 class DoctorDetailController extends Controller
 {
-
     public function index(){
 
         return view('stress_system.doctor_detail');
@@ -22,12 +23,11 @@ class DoctorDetailController extends Controller
         $syain = User::where('USER_ID', $syainId)->first();
 
         //結果がをリターン
-        // return view('stress_system.doctor_detail', ['user'=> $syain]);
         return response()->json($syain);
 
     }
 
-    public function saveDoctor(Request $request) {
+    public function saveDoctor(CreateUserRequest $request) {
 
         $syainId = User::updateOrCreate(
             ['USER_ID' => $request->USER_ID],
@@ -38,11 +38,20 @@ class DoctorDetailController extends Controller
             ]
             );
 
-            //$syainId->save(); 要らない
 
         return redirect()->route('stress_system.doctor_list')->
         with('success', '保存されました。');
     }
+
+    public function updateDoctor(UpdateUserRequest $request, $USER_ID) {
+            $user = User::where('USER_ID', $USER_ID)->firstOrFail();
+            $user->update($request->validated());
+
+            return redirect()->route('stress_system.doctor_list')->
+            with('success', '保存されました。');
+    }
+
+
 
     // 修正ページ
     public function detail($USER_ID) {
@@ -56,4 +65,5 @@ class DoctorDetailController extends Controller
         return redirect()->route('stress_system.doctor_list')->
         with('success', '');
     }
+
 }

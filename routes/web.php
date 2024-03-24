@@ -42,7 +42,7 @@ Route::get('/index', [IndexController::class, 'index'])
 Route::get('/blank', [IndexController::class, 'blank'])
         ->name('stress_system.blank');
 
-Route::get('/doctor_list', [DoctorListController::class, 'DoctorListIndex'])
+Route::get('/doctor_list', [SearchController::class, 'hyoji_search'])
          ->name('stress_system.doctor_list');
 
 // ajaxCompany Route Setting
@@ -70,17 +70,17 @@ Route::get('/detail/{USER_ID}', [DoctorDetailController::class,'detail'])
 Route::get('/detailSearch', [DoctorDetailController::class, 'detailSearch'])
         ->name('detailSearch');
 
-// 検索結果を処理するPOSTルート
+//検索結果を処理するPOSTルート
 Route::post('/detailSearch', [DoctorDetailController::class, 'detailSearch'])
         ->name('detailSearch.post');
 
-Route::post('saveDoctor', [DoctorDetailController::class, 'saveDoctor'])
+Route::post('doctor_detail', [DoctorDetailController::class, 'saveDoctor'])
         ->name('saveDoctor');
+
+Route::post('doctor_detail/{USER_ID}', [DoctorDetailController::class, 'updateDoctor'])
+        ->name('updateDoctor');
 
 // 削除関連
 Route::get('/delete/{USER_ID}', [DoctorDetailController::class,'delete'])
         ->name('delete');
 
-// // 20일 오늘부터 내가 하는거
-// Route::get('delete/{USER_ID}', [DoctorDetailController::class, 'deletePage'] )
-//         ->name('deletePage');

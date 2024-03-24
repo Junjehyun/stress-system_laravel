@@ -34,10 +34,6 @@ class User extends Authenticatable
         'KENGEN_KUBUN',
     ];
 
-    public function getKengenKubunAttribute($value) {
-        return $value == 1 ? '全社' : ($value == 2 ? '自社':'null');
-    }
-
     public function haisyaMst() {
         return $this->belongsTo(Haisya_mst::class, 'KAISYA_CODE', 'KAISYA_CODE');
     }

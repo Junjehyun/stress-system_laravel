@@ -66,7 +66,9 @@
 
                     <!-- 会社名 -->
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="companyCheck">
+                    <input class="form-check-input" type="checkbox" id="companyCheck" name="companyCheck"
+                    {{ old('companyCheck', $companyCheck) ? 'checked' : '' }}>
+
                     <label class="form-check-label" for="companyCheck">会社名</label>
 
                     <input type="text" class="form-control" placeholder="" id="companyNameInput"
@@ -74,13 +76,17 @@
 
                     <button type="button" class="btn btn-primary" id="AjaxCompany">検索</button>
 
-                    <input type="text" class="form-control" placeholder="" id="companyNameOutput"
-                    name="companyNameOutput" value="{{ !empty($companyNameOut)? $companyNameOut: '' }}">
+                    <select id="companyNameOutput" name="companyNameOutput" class="form-control">
+                        <option value="">会社名選択</option>
+                    </select>
+
                 </div>
 
                 <!-- 対象組織 -->
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="soshikiCheck">
+                    <input class="form-check-input" type="checkbox" id="soshikiCheck" name="soshikiCheck"
+                    {{ old('soshikiCheck', $soshikiCheck) ? 'checked' : '' }}>
+
                     <label class="form-check-label" for="soshikiCheck">対象組織</label>
 
                     <input type="text" class="form-control" placeholder="" id="soshikiNameInput"
@@ -88,24 +94,32 @@
 
                     <button type="button" class="btn btn-primary" id="AjaxSoshiki">検索</button>
 
-                    <input type="text" class="form-control" placeholder="" id="soshikiNameOutput"
-                    name="soshikiNameOutput" value="{{ !empty($soshikiNameOut)? $soshikiNameOut: '' }}">
+                    <select id="soshikiNameOutput" name="soshikiNameOutput" class="form-control">
+                        <option value="">組織名選択</option>
+                    </select>
+
+                    {{-- <input type="text" class="form-control" placeholder="" id="soshikiNameOutput"
+                    name="soshikiNameOutput" value="{{ !empty($soshikiNameOut)? $soshikiNameOut: '' }}"> --}}
                 </div>
 
              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="authorityCheck">
+                <input class="form-check-input" type="checkbox" id="authorityCheck" name="authorityCheck"
+                {{ old('authorityCheck', $authorityCheck) ? 'checked' : '' }}>
+
                 <label class="form-check-label" for="authorityCheck">権限区分</label>
 
+                <!-- 権限区分 라디오 버튼 -->
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="kengenKubun"
-                    id="allCompany" value="1" disabled>
+                    <input class="form-check-input" type="radio" name="kengenKubun" id="allCompany"
+                    value="1" {{ old('authorityCheck', $authorityCheck) ? '' : 'disabled' }} {{ old("kengenKubun", $kengenKubun) == 1 ? "checked" : "" }}>
                     <label class="form-check-label" for="allCompany">全社</label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="kengenKubun"
-                    id="myCompany" value="2" disabled>
+                    <input class="form-check-input" type="radio" name="kengenKubun" id="myCompany"
+                    value="2" {{ old('authorityCheck', $authorityCheck) ? '' : 'disabled' }} {{ old("kengenKubun", $kengenKubun) == 2 ? "checked" : "" }}>
                     <label class="form-check-label" for="myCompany">自社</label>
                 </div>
+
             </div>
 
         </div>
@@ -142,7 +156,7 @@
                     <td>{{ $user->name }}</td> <!-- 名前 -->
                     <td>{{ $user->KAISYA_CODE }}</td> <!-- 会社名 -->
                     <td>{{ $user->SOSHIKI_CODE }}</td> <!-- 組織名 -->
-                    <td>{{ $user->KENGEN_KUBUN }}</td> <!--権限区分-->
+                    <td>{{ $user->KENGEN_KUBUN == 1 ? '全社' : '自社' }}</td> <!--権限区分-->
 
                     <td>
                         <a href="{{ route('detail',
@@ -159,9 +173,9 @@
                 @endforelse
             </tbody>
         </table>
-        {{-- <div class="d-flex justify-content-center">
+        <div class="d-flex justify-content-center">
             {{ $results->links() }}
-        </div> --}}
+        </div>
 
     <!-- Bootstrap JS and dependencies -->
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.9.6/dist/umd/popper.min.js"></script>
@@ -172,51 +186,71 @@
     <!--ajaxCompany-->
 <script>
 
-        $( '#AjaxCompany' ).on( 'click' , function () {
-            //alert('ddd');
-            var kaishaName = $('#companyNameInput').val();
+$('#AjaxCompany').on('click', function () {
+    var kaishaName = $('#companyNameInput').val(); // ユーザーが入力した会社名を読み取る
 
-            $.ajaxSetup({
-            headers: {  'X-CSRF-TOKEN' : $( "[name='csrf-token']" ).attr( "content" ) }
-            });
+    $.ajaxSetup({
+        headers: { 'X-CSRF-TOKEN': $("meta[name='csrf-token']").attr("content") }
+    });
 
-            $.ajax( {
-                url: "{{ route('AjaxCompany') }}",
-                method: "POST",
-                data: { CompanyName : kaishaName },
-                dataType: "json",
-            }).done( function (res) {
-                    console.log(res);
-                    $('#companyNameOutput').val(res.KAISYA_CODE);
-            }).fail( function () {
-                alert ( '通信が失敗しました。' );
-            });
-        } );
+    $.ajax({
+        url: "{{ route('AjaxCompany') }}", // 요청을 보낼 서버의 URL
+        method: "POST",
+        data: { CompanyName: kaishaName }, // 서버로 보낼 데이터
+        dataType: "json",
+    }).done(function (res) {
+        var $companySelect = $('#companyNameOutput'); // select 태그 선택
+        $companySelect.empty(); // 기존의 옵션들을 비웁니다.
+        $companySelect.append($('<option>', { value: "", text: "会社名を選んでください" })); // 기본 옵션 추가
 
-
-
-    <!--ajaxSoshiki-->
-
-        $( '#AjaxSoshiki' ).on( 'click', function() {
-            var soshikiName = $('#soshikiNameInput').val();
-
-            $.ajaxSetup({
-                headers: { 'X-CSRF-TOKEN' : $( "[name='csrf-token']" ).attr( "content" ) }
-            });
-
-            $.ajax({
-                url: "{{ route('AjaxSoshiki') }}" ,
-                method: "POST" ,
-                data: { SoshikiName: soshikiName } ,
-                dataType: "json" ,
-            }).done( function (res) {
-                console.log(res);
-                $('#soshikiNameOutput').val(res.SOSHIKI_CODE);
-            }).fail( function () {
-                alert ( '通信が失敗しました。' );
-            });
+        // 서버로부터 받은 응답에서 회사 목록을 select 태그에 옵션으로 추가합니다.
+        $.each(res, function (index, company) {
+            $companySelect.append($('<option>', {
+                value: company.KAISYA_CODE, // KAISYA_CODE를 옵션의 값으로 사용합니다.
+                text: company.KAISYA_NAME // KAISYA_NAME를 옵션의 텍스트로 사용합니다.
+            }));
         });
 
+        $companySelect.prop('disabled', false); // 선택 상자를 활성화합니다.
+    }).fail(function () {
+        alert('通信が失敗しました。');
+    });
+});
+
+
+
+
+        //ajaxSoshiki
+        $('#AjaxSoshiki').on('click', function () {
+    var soshikiName = $('#soshikiNameInput').val(); // 사용자가 입력한 회사명을 가져옵니다.
+
+    $.ajaxSetup({
+        headers: { 'X-CSRF-TOKEN': $("meta[name='csrf-token']").attr("content") }
+    });
+
+    $.ajax({
+        url: "{{ route('AjaxSoshiki') }}", // 요청을 보낼 서버의 URL
+        method: "POST",
+        data: { SoshikiName: soshikiName }, // 서버로 보낼 데이터
+        dataType: "json",
+    }).done(function (res) {
+        var $soshikiSelect = $('#soshikiNameOutput'); // select 태그 선택
+        $soshikiSelect.empty(); // 기존의 옵션들을 비웁니다.
+        $soshikiSelect.append($('<option>', { value: "", text: "組織名を選んでください" })); // 기본 옵션 추가
+
+        // 서버로부터 받은 응답에서 회사 목록을 select 태그에 옵션으로 추가합니다.
+        $.each(res, function (index, soshiki) {
+            $soshikiSelect.append($('<option>', {
+                value: soshiki.SOSHIKI_CODE, // KAISYA_CODE를 옵션의 값으로 사용합니다.
+                text: soshiki.SOSHIKI_NAME // KAISYA_NAME를 옵션의 텍스트로 사용합니다.
+            }));
+        });
+
+        $soshikiSelect.prop('disabled', false); // 선택 상자를 활성화합니다.
+    }).fail(function () {
+        alert('通信が失敗しました。');
+    });
+});
 
     // 権限区分버튼 안눌렀을때, 디폴트값 비활성화
     const checkbox = document.getElementById('authorityCheck');
