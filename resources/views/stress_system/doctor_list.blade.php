@@ -58,7 +58,8 @@
 
 <div class="container mt-4">
 
-    <form class="form-inline" action="{{ route('hyoji_search') }}" method="POST" >
+    <!--hyoji_search フォームタグ-->
+<form class="form-inline" action="{{ route('hyoji_search') }}" method="POST" >
         @csrf
 
         <div class="container">
@@ -66,83 +67,100 @@
 
                     <!-- 会社名 -->
                 <div class="form-check">
+                    <!--会社名を選択チェックボックス-->
                     <input class="form-check-input" type="checkbox" id="companyCheck" name="companyCheck"
                     {{ old('companyCheck', $companyCheck) ? 'checked' : '' }}>
-
                     <label class="form-check-label" for="companyCheck">会社名</label>
 
+                    <!--会社名を入力するInput-->
                     <input type="text" class="form-control" placeholder="" id="companyNameInput"
                      name="companyNameInput" value="{{ !empty($companyName)? $companyName: '' }}">
 
+                    <!--会社名を入力した後、押すボタン-->
                     <button type="button" class="btn btn-primary" id="AjaxCompany">検索</button>
 
+                    <!--会社名の結果が出るセレクトボックス-->
                     <select id="companyNameOutput" name="companyNameOutput" class="form-control">
-                        <option value="">会社名選択</option>
+                        <option value="">会社を選択</option>
+                        @foreach ($haisyaList as $haisya)
+                        <option value="{{ $haisya->KAISYA_CODE }}" {{ ($companyNameOut == $haisya->KAISYA_CODE) ? 'selected' : '' }}>
+                            {{ $haisya->KAISYA_NAME_JPN }}</option>
+                        @endforeach
                     </select>
 
                 </div>
 
                 <!-- 対象組織 -->
                 <div class="form-check">
+                    <!--対象組織を選択チェックボックス-->
                     <input class="form-check-input" type="checkbox" id="soshikiCheck" name="soshikiCheck"
                     {{ old('soshikiCheck', $soshikiCheck) ? 'checked' : '' }}>
-
                     <label class="form-check-label" for="soshikiCheck">対象組織</label>
 
+                    <!--対象組織を入力するInput-->
                     <input type="text" class="form-control" placeholder="" id="soshikiNameInput"
                     name="soshikiNameInput" value="{{ !empty($soshikiName)? $soshikiName: ''}}">
 
+                     <!--対象組織を入力した後、押すボタン-->
                     <button type="button" class="btn btn-primary" id="AjaxSoshiki">検索</button>
 
+                    <!--対象組織の結果が出るセレクトボックス-->
                     <select id="soshikiNameOutput" name="soshikiNameOutput" class="form-control">
                         <option value="">組織名選択</option>
+                         @foreach ($soshikiList as $soshiki)
+                <option value="{{ $soshiki->SOSHIKI_CODE }}" {{ ($soshikiNameOut == $soshiki->SOSHIKI_CODE) ? 'selected' : '' }}>
+                    {{ $soshiki->SOSHIKI_NAME_JPN ?? '' }}</option>
+                     @endforeach
                     </select>
 
-                    {{-- <input type="text" class="form-control" placeholder="" id="soshikiNameOutput"
-                    name="soshikiNameOutput" value="{{ !empty($soshikiNameOut)? $soshikiNameOut: '' }}"> --}}
                 </div>
-
+                <!--権限区分チェックボックス-->
              <div class="form-check">
                 <input class="form-check-input" type="checkbox" id="authorityCheck" name="authorityCheck"
                 {{ old('authorityCheck', $authorityCheck) ? 'checked' : '' }}>
-
                 <label class="form-check-label" for="authorityCheck">権限区分</label>
 
-                <!-- 権限区分 라디오 버튼 -->
+                <!-- 権限区分ラヂオボタン 全社-->
                 <div class="form-check form-check-inline">
                     <input class="form-check-input" type="radio" name="kengenKubun" id="allCompany"
                     value="1" {{ old('authorityCheck', $authorityCheck) ? '' : 'disabled' }} {{ old("kengenKubun", $kengenKubun) == 1 ? "checked" : "" }}>
                     <label class="form-check-label" for="allCompany">全社</label>
                 </div>
+
+                <!-- 権限区分ラヂオボタン 自社-->
                 <div class="form-check form-check-inline">
                     <input class="form-check-input" type="radio" name="kengenKubun" id="myCompany"
                     value="2" {{ old('authorityCheck', $authorityCheck) ? '' : 'disabled' }} {{ old("kengenKubun", $kengenKubun) == 2 ? "checked" : "" }}>
                     <label class="form-check-label" for="myCompany">自社</label>
                 </div>
 
-            </div>
 
+                </div>
+            </div>
         </div>
     </div>
-</div>
     <!--表示ボタン-->
     <div class="button-group d-flex justify-content-center mt-4">
       <button type="submit" class="btn btn-primary">表示する</button>
-    </form>
+</form>
     <!--追加ボタン-->
     <a href="{{ route('stress_system.doctor_detail') }}"
-    class="btn btn-primary">追加する</a>
+            class="btn btn-primary">追加する</a>
     </div>
+
+        <!--検索結果が出るデータのテーブル-->
         <table class="table table-striped table-hover">
+
+            <!--テーブルのフォーム-->
             <thead>
                 <tr>
-                    <th>No.</th>
-                    <th>利用者ID</th>
-                    <th>名前</th>
-                    <th>会社名</th>
-                    <th>組織名</th>
-                    <th>権限区分</th>
-                    <th></th>
+                    <th>No.</th> <!--順番を表示する-->
+                    <th>利用者ID</th> <!--USER_ID-->
+                    <th>名前</th> <!--name-->
+                    <th>会社名</th> <!--company_name-->
+                    <th>組織名</th> <!--organization_name-->
+                    <th>権限区分</th> <!--KENGEN_KUBUN-->
+                    <th></th> <!--変更、削除ボタンがある行-->
                 </tr>
             </thead>
 
@@ -154,30 +172,60 @@
                     <td>{{ $index + 1 }}</td> <!-- 番号 -->
                     <td>{{ $user->USER_ID }}</td> <!-- 利用者ID -->
                     <td>{{ $user->name }}</td> <!-- 名前 -->
-                    <td>{{ $user->KAISYA_CODE }}</td> <!-- 会社名 -->
-                    <td>{{ $user->SOSHIKI_CODE }}</td> <!-- 組織名 -->
+                    <td>{{ $user->company_name ?? '' }}</td> <!--会社名-->
+                    <td>{{ $user->organization_name ?? '' }}</td> <!--組織名-->
                     <td>{{ $user->KENGEN_KUBUN == 1 ? '全社' : '自社' }}</td> <!--権限区分-->
 
+                    <!--変更、削除ボタン-->
                     <td>
-                        <a href="{{ route('detail',
-                        [$user->USER_ID]) }}" class="btn btn-success">変更</a>
+                        <button class="btn btn-success" id="updateBtn"
+                        onclick="clickUpdate('{{ $user->USER_ID }}')">変更</button>
 
                         <a href="{{ route('delete',
                         [$user->USER_ID]) }}"
                         type="submit" class="btn btn-danger">削除</a>
                      </td>
+
                 </tr>
 
+                <!--検索結果がなかった場合-->
                 @empty
                     <p>会社名または組織名の結果がありません。</p>
                 @endforelse
             </tbody>
+
         </table>
+        <form action="{{ route('detail') }}" method="GET" id="updateForm">
+
+                <!--회사명 체크박스 元 companyCheck-->
+            <input type="hidden" name="comCheck" id="comCheck">
+                <!--회사명 인풋 元companyNameInput-->
+            <input type="hidden" name="companyNameIn" id="companyNameIn">
+                <!-- 회사명 아웃풋 元companyNameOutput -->
+			<input type="hidden" name="companyNameOut" id="companyNameOut">
+
+                <!-- 조직명 체크박스 元 soshikiCheck -->
+			<input type="hidden" name="soCheck" id="soCheck">
+                <!--조직명 인풋 元soshikiNameInput-->
+			<input type="hidden" name="soshikiNameIn" id="soshikiNameIn">
+                <!--조직명 아웃풋 元soshikiNameOutput-->
+			<input type="hidden" name="soshikiNameOut" id="soshikiNameOut">
+                <!--권한구분 체크박스 元authorityCheck-->
+			<input type="hidden" name="kengenCheck" id="kengenCheck">
+                <!--젠샤 라디오버튼 元allCompany-->
+			<input type="hidden" name="kengenKubun" id="kengenKubun">
+                <!--지샤 라디오버튼 元myCompany-->
+
+            <input type="hidden" name="USER_ID" id="USER_ID" value="{{ $user->USER_ID ?? '' }}">
+
+        </form>
+
+        <!--ページネーション設定-->
         <div class="d-flex justify-content-center">
             {{ $results->links() }}
         </div>
 
-    <!-- Bootstrap JS and dependencies -->
+    <!-- Bootstrap JS and dependencies 追加-->
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.9.6/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
@@ -194,65 +242,64 @@ $('#AjaxCompany').on('click', function () {
     });
 
     $.ajax({
-        url: "{{ route('AjaxCompany') }}", // 요청을 보낼 서버의 URL
+        url: "{{ route('AjaxCompany') }}",
         method: "POST",
-        data: { CompanyName: kaishaName }, // 서버로 보낼 데이터
+        data: { CompanyName: kaishaName },
         dataType: "json",
     }).done(function (res) {
-        var $companySelect = $('#companyNameOutput'); // select 태그 선택
-        $companySelect.empty(); // 기존의 옵션들을 비웁니다.
-        $companySelect.append($('<option>', { value: "", text: "会社名を選んでください" })); // 기본 옵션 추가
+        var $companySelect = $('#companyNameOutput');
+        $companySelect.empty();
+        $companySelect.append($('<option>', { value: "", text: "会社名を選んでください" }));
 
-        // 서버로부터 받은 응답에서 회사 목록을 select 태그에 옵션으로 추가합니다.
         $.each(res, function (index, company) {
             $companySelect.append($('<option>', {
-                value: company.KAISYA_CODE, // KAISYA_CODE를 옵션의 값으로 사용합니다.
-                text: company.KAISYA_NAME // KAISYA_NAME를 옵션의 텍스트로 사용합니다.
+                value: company.KAISYA_CODE,
+                text: company.KAISYA_NAME
             }));
         });
 
-        $companySelect.prop('disabled', false); // 선택 상자를 활성화합니다.
+        $companySelect.prop('disabled', false);
     }).fail(function () {
         alert('通信が失敗しました。');
     });
 });
 
-
-
-
-        //ajaxSoshiki
-        $('#AjaxSoshiki').on('click', function () {
-    var soshikiName = $('#soshikiNameInput').val(); // 사용자가 입력한 회사명을 가져옵니다.
+$('#companyNameOutput').change(function() {
+    var companyNameSelected = $(this).val();
+    sessionStorage.setItem('companyNameSelected', companyNameSelected);
+});
+    //ajaxSoshiki
+    $('#AjaxSoshiki').on('click', function () {
+    var soshikiName = $('#soshikiNameInput').val();
 
     $.ajaxSetup({
         headers: { 'X-CSRF-TOKEN': $("meta[name='csrf-token']").attr("content") }
     });
 
     $.ajax({
-        url: "{{ route('AjaxSoshiki') }}", // 요청을 보낼 서버의 URL
+        url: "{{ route('AjaxSoshiki') }}",
         method: "POST",
-        data: { SoshikiName: soshikiName }, // 서버로 보낼 데이터
+        data: { SoshikiName: soshikiName },
         dataType: "json",
     }).done(function (res) {
-        var $soshikiSelect = $('#soshikiNameOutput'); // select 태그 선택
-        $soshikiSelect.empty(); // 기존의 옵션들을 비웁니다.
-        $soshikiSelect.append($('<option>', { value: "", text: "組織名を選んでください" })); // 기본 옵션 추가
+        var $soshikiSelect = $('#soshikiNameOutput');
+        $soshikiSelect.empty();
+        $soshikiSelect.append($('<option>', { value: "", text: "組織名を選んでください" }));
 
-        // 서버로부터 받은 응답에서 회사 목록을 select 태그에 옵션으로 추가합니다.
         $.each(res, function (index, soshiki) {
             $soshikiSelect.append($('<option>', {
-                value: soshiki.SOSHIKI_CODE, // KAISYA_CODE를 옵션의 값으로 사용합니다.
-                text: soshiki.SOSHIKI_NAME // KAISYA_NAME를 옵션의 텍스트로 사용합니다.
+                value: soshiki.SOSHIKI_CODE,
+                text: soshiki.SOSHIKI_NAME
             }));
         });
 
-        $soshikiSelect.prop('disabled', false); // 선택 상자를 활성화합니다.
+        $soshikiSelect.prop('disabled', false);
     }).fail(function () {
         alert('通信が失敗しました。');
     });
 });
 
-    // 権限区分버튼 안눌렀을때, 디폴트값 비활성화
+    // 権限区分のチェックによる、ボタンの状態を設定する
     const checkbox = document.getElementById('authorityCheck');
     const radio1 = document.getElementById('allCompany');
     const radio2 = document.getElementById('myCompany');
@@ -269,24 +316,58 @@ $('#AjaxCompany').on('click', function () {
 
 
     $(document).ready(function() {
-    // 회사명 체크박스 상태의 변경 이벤트 리스너
+
     $('#companyCheck').change(function() {
         var checked = $(this).is(':checked');
         $('#companyNameInput').prop('disabled', !checked);
         $('#companyNameOutput').prop('disabled', !checked);
     });
 
-    // 조직명 체크박스 상태의 변경 이벤트 리스너
     $('#soshikiCheck').change(function() {
         var checked = $(this).is(':checked');
         $('#soshikiNameInput').prop('disabled', !checked);
         $('#soshikiNameOutput').prop('disabled', !checked);
     });
 
-    // 페이지 로드할때, 체크박스 상태에 의한 입력창 초기설정
     $('#companyCheck').trigger('change');
     $('#soshikiCheck').trigger('change');
     });
+
+    function clickUpdate(userId) {
+
+        // 회사명 체크박스
+        $('#comCheck').val($('#companyCheck').val());
+
+        // 회사명 인풋
+        $('#companyNameIn').val($('#companyNameInput').val());
+
+        // 회사명 아웃풋
+        $('#companyNameOut').val($('#companyNameOutput').val());
+
+        // 조직명 체크박스
+        $('#soCheck').val($('#soshikiCheck').val());
+
+        // 조직명 인풋
+        $('#soshikiNameIn').val($('#soshikiNameInput').val());
+
+        // 조직명 아웃풋
+        $('#soshikiNameOut').val($('#soshikiNameOutput').val());
+
+        // 권한구분 체크박스
+        $('#kengenCheck').val($('#authorityCheck').val());
+
+        if (document.querySelector('#allCompany').checked) {
+            $('#kengenKubun').val($('#allCompany').val());
+        } else if (document.querySelector('#myCompany').checked) {
+            $('#kengenKubun').val($('#myCompany').val());
+        }
+        // 젠샤 라디오버튼
+        // 지샤 라디오버튼
+        $('#USER_ID').val($('#USER_ID').val());
+
+        $('#updateForm').submit();
+
+    }
 
 </script>
 

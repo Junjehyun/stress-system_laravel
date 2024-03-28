@@ -9,16 +9,33 @@ use App\Models\User;
 class DoctorListController extends Controller
 {
     //
-    public function DoctorListIndex(){
+    public function DoctorListIndex(Request $request)   {
+
         $results = [];
+        // 요청에서 검색 조건을 추출
+        $companyCheck = $request->input('companyCheck');
+        $companyNameInput = $request->input('companyNameInput');
+        $companyNameOutput = $request->input('companyNameOutput');
+        $soshikiCheck = $request->input('soshikiCheck');
+        $soshikiNameInput = $request->input('soshikiNameInput');
+        $soshikiNameOutput = $request->input('soshikiNameOutput');
+        $authorityCheck = $request->input('authorityCheck');
+        $allCompany = $request->input('allCompany');
+        $myCompany = $request->input('myCompany');
+        $user = User::where('USER_ID', $request->input('USER_ID'))->first();
+        $haisyaList = [];
+        $soshikiList = [];
+        //dd($request->all());
 
         $results = User::select('id as No', 'USER_ID', 'name', 'KAISYA_CODE',
-        'SOSHIKI_CODE', 'KENGEN_KUBUN')->get();
-        //$companyCheck = 'aaa';
-        // pagination
-        $results = User::latest()->paginate(10);
+        'SOSHIKI_CODE', 'KENGEN_KUBUN')
+        ->latest('id')
+        ->paginate(10);
 
-        return view("stress_system.doctor_list", compact('results', 'companyCheck'));
+        return view("stress_system.doctor_list", compact('results',
+        'companyCheck', 'companyNameInput', 'companyNameOutput', 'soshikiCheck',
+        'soshikiNameInput', 'soshikiNameOutput', 'authorityCheck',
+        'allCompany', 'myCompany', 'haisyaList', 'soshikiList'));
     }
 
     public function AjaxCompany(Request $request) {
@@ -40,11 +57,11 @@ class DoctorListController extends Controller
 
     public function AjaxSoshiki(Request $request) {
         $soshikiName = $request->input('SoshikiName');
-        // `like`를 사용한 あいまい検索 구현
+        // `like` あいまい検索
         $soshiki = Taisyo_soshiki::where('SOSHIKI_NAME_JPN', 'like', "%{$soshikiName}%")->get();
 
         if(!$soshiki->isEmpty()) {
-            // 회사 코드와 이름을 포함하는 배열로 변환
+
             $data = $soshiki->map(function($item) {
                 return ['SOSHIKI_CODE' => $item->SOSHIKI_CODE, 'SOSHIKI_NAME' => $item->SOSHIKI_NAME_JPN];
             });

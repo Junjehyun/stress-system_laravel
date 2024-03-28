@@ -35,35 +35,61 @@ class DoctorDetailController extends Controller
                 'name' => $request->name,
                 'KAISYA_CODE' => $request->KAISYA_CODE,
                 'SOSHIKI_CODE' => $request->SOSHIKI_CODE,
+                'KENGEN_KUBUN' => $request->KENGEN_KUBUN,
             ]
             );
-
 
         return redirect()->route('stress_system.doctor_list')->
         with('success', '保存されました。');
     }
 
     public function updateDoctor(UpdateUserRequest $request, $USER_ID) {
+
             $user = User::where('USER_ID', $USER_ID)->firstOrFail();
-            $user->update($request->validated());
+            $user->update(
+                $request->validated()+ ['KENGEN_KUBUN' => $request->KENGEN_KUBUN]
+            );
 
             return redirect()->route('stress_system.doctor_list')->
             with('success', '保存されました。');
     }
 
 
+// 修正ページ
+public function detail(Request $request) {
 
-    // 修正ページ
-    public function detail($USER_ID) {
-        // user モデルを使って職員情報を検索
-        $user = User::where('USER_ID', $USER_ID)->first();
-        return view('stress_system.doctor_detail', compact('user'));
+//dd($request->all());
+
+        $companyCheck = $request->input('comCheck');
+        $companyNameIn = $request->input('companyNameIn');
+        $companyNameOut = $request->input('companyNameOut');
+        $soCheck = $request->input('soCheck');
+        $soshikiNameIn = $request->input('soshikiNameIn');
+        $soshikiNameOut = $request->input('soshikiNameOut');
+        $kengenCheck = $request->input('kengenCheck');
+        $kengenKubun = $request->input('kengenKubun');
+
+        //$user = User::where('USER_ID', $USER_ID)->first();
+        $user = User::where('USER_ID', $request->input('USER_ID'))->first();
+        //dd($companyNameIn);
+
+        return view('stress_system.doctor_detail', compact
+        ('user', 'companyCheck', 'companyNameIn', 'companyNameOut','soCheck','soshikiNameIn',
+             'soshikiNameOut','kengenCheck','kengenKubun'));
+     }
+
+    public function createDoctorDetail($userId = null) {
+
+        $user = null;
+        if ($userId) {
+            $user = User::find($userId);
+
+        }
+
+        return view('doctor_detail', compact('user'));
+
     }
 
-    public function delete($USER_ID) {
-        User::where('USER_ID', $USER_ID)->delete();
-        return redirect()->route('stress_system.doctor_list')->
-        with('success', '');
-    }
+
 
 }

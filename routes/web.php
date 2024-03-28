@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DoctorDelkakuninController;
 use App\Http\Controllers\DoctorDelkauninController;
 use App\Http\Controllers\DoctorDetailController;
 use App\Http\Controllers\DoctorListController;
@@ -42,8 +43,11 @@ Route::get('/index', [IndexController::class, 'index'])
 Route::get('/blank', [IndexController::class, 'blank'])
         ->name('stress_system.blank');
 
-Route::get('/doctor_list', [SearchController::class, 'hyoji_search'])
-         ->name('stress_system.doctor_list');
+// Route::get('/doctor_list', [SearchController::class, 'hyoji_search'])
+//          ->name('stress_system.doctor_list');
+
+Route::get('/doctor_list',[SearchController::class, 'hyoji_search'])
+        ->name('stress_system.doctor_list');
 
 // ajaxCompany Route Setting
 Route::post('ajaxcompany', [DoctorListController::class, 'AjaxCompany'])
@@ -63,8 +67,13 @@ Route::get('doctor_detail', [DoctorDetailController::class,'index'])
         ->name('stress_system.doctor_detail');
 
 // 既存のデータを変更ボタンを押した時
-Route::get('/detail/{USER_ID}', [DoctorDetailController::class,'detail'])
+// Route::get('/detail/{USER_ID}', [DoctorDetailController::class,'detail'])
+//         ->name('detail');
+
+//既存のデータを変更ボタンを押した時
+Route::get('/detail', [DoctorDetailController::class,'detail'])
         ->name('detail');
+
 
 // GET
 Route::get('/detailSearch', [DoctorDetailController::class, 'detailSearch'])
@@ -74,13 +83,14 @@ Route::get('/detailSearch', [DoctorDetailController::class, 'detailSearch'])
 Route::post('/detailSearch', [DoctorDetailController::class, 'detailSearch'])
         ->name('detailSearch.post');
 
-Route::post('doctor_detail', [DoctorDetailController::class, 'saveDoctor'])
-        ->name('saveDoctor');
-
 Route::post('doctor_detail/{USER_ID}', [DoctorDetailController::class, 'updateDoctor'])
         ->name('updateDoctor');
 
+Route::post('doctor_detail', [DoctorDetailController::class, 'saveDoctor'])
+        ->name('saveDoctor');
+
 // 削除関連
-Route::get('/delete/{USER_ID}', [DoctorDetailController::class,'delete'])
+Route::get('/delete/{USER_ID}', [DoctorDelkakuninController::class,'delete'])
         ->name('delete');
+
 
