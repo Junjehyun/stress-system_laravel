@@ -109,7 +109,7 @@
     </div>
 
 
-
+    {{-- 確定ボタンは修正するものだから、UpdateDoctorだ。 --}}
     <button type="submit" class="btn btn-primary">確定</button>
  </form>
 

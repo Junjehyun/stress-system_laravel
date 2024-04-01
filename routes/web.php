@@ -39,6 +39,7 @@ Route::middleware([
 // http://localhost:8000/index operator_menu 이동
 Route::get('/index', [IndexController::class, 'index'])
         ->name("stress_system.operator_menu");
+
 // http://localhost:8000/blank 안쓰는 페이지 대충 처리
 Route::get('/blank', [IndexController::class, 'blank'])
         ->name('stress_system.blank');

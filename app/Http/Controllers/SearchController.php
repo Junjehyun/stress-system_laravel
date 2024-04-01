@@ -34,9 +34,6 @@ class SearchController extends Controller
     $haisyaList= [];
     $soshikiList = [];
 
-    //dd($request);
-
-
     $userID = $request->input("USER_ID");
     $name = $request->input("name");
     $companyCode = $request->input("KAISYA_CODE");
@@ -91,6 +88,8 @@ class SearchController extends Controller
         $haisyaList = Haisya_mst::where('KAISYA_NAME_JPN', 'like', "%{$companyName}%")->get();
 
     }
+
+    //dd($haisyaList);
 
     if(!empty($soshikiName) && !empty($soshikiNameSelected)){
         $soshikiList = Taisyo_soshiki::where('SOSHIKI_NAME_JPN', 'like' ,"%{$soshikiName}%")->get();

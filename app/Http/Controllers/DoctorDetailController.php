@@ -45,13 +45,32 @@ class DoctorDetailController extends Controller
 
     public function updateDoctor(UpdateUserRequest $request, $USER_ID) {
 
+        $companyCheck = $request->input('companyCheck');
+        $companyNameInput = $request->input('companyNameInput');
+        $companyNameOutput = $request->input('companyNameOutput');
+        $soshikiCheck = $request->input('soshikiCheck');
+        $soshikiNameInput = $request->input('soshikiNameInput');
+        $soshikiNameOutput = $request->input('soshikiNameOutput');
+        $authorityCheck = $request->input('authorityCheck');
+        $allCompany = $request->input('allCompany');
+        $myCompany = $request->input('myCompany');
+
             $user = User::where('USER_ID', $USER_ID)->firstOrFail();
             $user->update(
                 $request->validated()+ ['KENGEN_KUBUN' => $request->KENGEN_KUBUN]
             );
 
-            return redirect()->route('stress_system.doctor_list')->
-            with('success', '保存されました。');
+            return redirect()->route('stress_system.doctor_list', [
+                'companyCheck' => $companyCheck,
+                'companyNameInput' => $companyNameInput,
+                'companyNameOutput' => $companyNameOutput,
+                'soshikiCheck' => $soshikiCheck,
+                'soshikiNameInput' => $soshikiNameInput,
+                'soshikiNameOutput' => $soshikiNameOutput,
+                'authorityCheck' => $authorityCheck,
+                'allCompany' => $allCompany,
+                'myCompany'  => $myCompany,
+            ])->with('success', '保存されました。');
     }
 
 
